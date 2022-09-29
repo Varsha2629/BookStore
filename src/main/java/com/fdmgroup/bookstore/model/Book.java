@@ -20,9 +20,7 @@ public class Book {
 		this.bookGenre = bookGenre;
 	}
 
-	public Book() {
-		
-	}
+
 
 	public int getItemld() {
 		return itemld;
@@ -52,7 +50,6 @@ public class Book {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
 
 	public String getAuthor() {
 		return author;
@@ -100,7 +97,7 @@ public class Book {
 				+ ", bookGenre=" + bookGenre + "]";
 	}
 
-
+	
 	
 	
 	
