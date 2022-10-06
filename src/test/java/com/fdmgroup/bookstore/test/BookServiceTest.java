@@ -1,19 +1,17 @@
-package com.fdmgroup.bookstore.test;
+package com.fdmgroup.bookstore.service.test;
 
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import com.fdmgroup.bookstore.data.BookRepository;
 import com.fdmgroup.bookstore.model.Book;
@@ -22,90 +20,70 @@ import com.fdmgroup.bookstore.service.BookService;
 import com.fdmgroup.bookstore.service.ItemNotFoundException;
 
 class BookServiceTest {
-
-	BookRepository bookRepository;
-	BookService bookService;
 	
-	
-	@BeforeEach
-	public void setup() {
-		bookRepository = mock(BookRepository.class);
-		bookService =new  BookService(bookRepository);
-	}
-	 
-	@Test
-	void testFindById() throws ItemNotFoundException {
-		Book book= new Book(1,7,"Rockstar","Keshav",BookGenre.ACTION);
-		when(this.bookRepository.findById(1)).thenReturn(book);
-		assertEquals(this.bookService.findById(1),book);
-	}
-	
-	 
-	@Test
-	void testFindById_ItemNotFoundException() throws ItemNotFoundException {
-		Exception exception = assertThrows(ItemNotFoundException.class, () -> {
-			this.bookService.findById(1);
-	    }); 
-	
-	    String expectedMessage = "Item not Found";
-	    String actualMessage = exception.getMessage();
-	
-	    assertTrue(actualMessage.contains(expectedMessage));
-	}
-	
-	
-	
-	@Test
-	void testGetAllBooks() throws ItemNotFoundException {
+	BookService bookservice;
+	List<Object> books_list;
+	Book book1;
 		
-		List<Object> books=new ArrayList<>();
-		books.add(new Book(1,7,"Rockstar","Keshav",BookGenre.ACTION));
-		books.add(new Book(2,10,"Peter","Chang",BookGenre.ACTION));
-		when(this.bookRepository.findAll()).thenReturn(books);
-		List<Book> actual =this.bookService.getAllBooks();
-		assertEquals(books,actual);
+	@Mock
+	BookRepository bookRepoMock;
+	
+	@BeforeAll
+	static void setUpBeforeClass() throws Exception {
 	}
 
-	@Test
-	void testGetBooksOfGenre() throws ItemNotFoundException {
-		List<Object> books=new ArrayList<>();
-		books.add(new Book(1,7,"Rockstar","Keshav",BookGenre.ACTION));
-		books.add(new Book(2,10,"Peter","Chang",BookGenre.ACTION));
-		when(this.bookRepository.findAll()).thenReturn(books);
-		List<Book> actual=this.bookService.getBooksOfGenre(BookGenre.ACTION);
-		assertEquals(books, actual);
-	}
-	
-	@Test
-	void testSearchBooksByTitle() {
-		List<Object> books=new ArrayList<>();
-		books.add(new Book(1,7,"Rockstar","Keshav",BookGenre.ACTION));
-		books.add(new Book(2,10,"Rockstar","Chang",BookGenre.ACTION));
-		when(this.bookRepository.findAll()).thenReturn(books);
-		List<Book> actual=this.bookService.searchBooksByTitle("Rockstar");
-		assertEquals(books, actual);
-	}
-	
-	
-	
-	
-	@Test
-	void testSearchBooksByAuthorName() {
-		List<Object> books=new ArrayList<>();
-		books.add(new Book(1,7,"Rockstar","Keshav Ganesh",BookGenre.ACTION));
-		books.add(new Book(2,10,"Rockstar","keshav",BookGenre.ACTION));
-		when(this.bookRepository.findAll()).thenReturn(books);
-		List<Book> actual=this.bookService.searchBooksByAuthorName("KESHAV");
-		assertEquals(books, actual);
+	@BeforeEach
+	void setUp() throws Exception {
+		books_list = new ArrayList<>();
+		
+		bookRepoMock = mock(BookRepository.class);
+		bookservice = new BookService(bookRepoMock);
+		
+		book1 = new Book(1,10.0,"newBook","me", BookGenre.CRIME);
+		
+		books_list.add(book1);
+				
 	}
 
+
+	@Test
+	public void testgetAllBooks() {
+		
+		when(bookRepoMock.findAll()).thenReturn(books_list);
+		assertEquals(books_list, bookservice.getAllBooks());
+			
+	}
 	
 	@Test
-	void testfordeleteBookByTitle() {
-		List<Object> books=new ArrayList<>();
-		books.add(new Book(1,7,"Rockstar","Keshav Ganesh",BookGenre.ACTION));
-		books.add(new Book(2,10,"Rockstar","keshav",BookGenre.ACTION));
-		when(this.bookRepository.findAll()).thenReturn(books);
-		verify(this.bookRepository,times(1)).delete(new Book(1,7,"Rockstar","Keshav Ganesh",BookGenre.ACTION) );
+	void testgetBooksOfGenre()  {
+				
+		assertEquals(List.of(),bookservice.getBooksOfGenre(BookGenre.CRIME));
 	}
+	
+	@Test
+	void testsearchBooksByTitle() {
+
+		
+		assertEquals(List.of(),bookservice.searchBooksByTitle(book1.getTitle()));	}
+	
+	@Test
+	void searchBooksByAuthorName() {
+		
+				
+		assertEquals(List.of(),bookservice.searchBooksByAuthoyName(book1.getAuthor()));
+	}
+	
+	@Test
+	void testfindBYId()  {
+
+				
+		assertThrows(ItemNotFoundException.class,() ->{
+			Book byId = bookservice.findById(book1.getItemld());
+		});
+
+	}
+	
+	
+
+
 }
